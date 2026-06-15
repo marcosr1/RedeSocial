@@ -1,0 +1,17 @@
+[
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Suporte_Hub",
+        "texto": "ola"
+    },
+    {
+        "enviado_por": "EU_novo",
+        "recebido_por": "marcos",
+        "texto": "ola marcos"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "EU_novo",
+        "texto": "opa"
+    }
+]

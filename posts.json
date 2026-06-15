@@ -1,0 +1,43 @@
+[
+    {
+        "autor": "EU_novo",
+        "texto": "hoje joguei gta haha",
+        "imagem": "D:/capturas/Grand Theft Auto V 01_06_2025 21_07_16.png",
+        "curtidas": 0
+    },
+    {
+        "autor": "marcos",
+        "texto": "olha ae",
+        "imagem": "C:/Users/marco/OneDrive/Imagens/Capturar.PNG",
+        "curtidas": 1,
+        "comentarios": [
+            {
+                "autor": "EU_novo",
+                "texto": "kkkkkkkkkkkkkkkk muito burro"
+            }
+        ]
+    },
+    {
+        "autor": "marcos",
+        "texto": "olha esse erro",
+        "imagem": "C:/Users/marco/OneDrive/Imagens/Capturar.PNG",
+        "curtidas": 0
+    },
+    {
+        "autor": "marcos",
+        "texto": "ola",
+        "imagem": "C:/Users/marco/OneDrive/Imagens/Capturar2.PNG",
+        "curtidas": 1,
+        "comentarios": [
+            {
+                "autor": "marcos",
+                "texto": "hahaha muito burro"
+            }
+        ]
+    },
+    {
+        "autor": "marcos",
+        "texto": "ola",
+        "curtidas": 10
+    }
+]

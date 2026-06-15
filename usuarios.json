@@ -1,0 +1,14 @@
+[
+    {
+        "usuario": "marcos",
+        "senha": "12345",
+        "bio": "oi eu sou o marcos",
+        "foto_perfil": "C:/Users/marco/OneDrive/Imagens/Capturar2.PNG"
+    },
+    {
+        "usuario": "EU_novo",
+        "senha": "12345",
+        "foto_perfil": "D:/capturas/Grand Theft Auto V 01_06_2025 21_07_16.png",
+        "bio": "ola \n- Pi\n-2000\n-vim do face"
+    }
+]
