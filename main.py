@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
+from datetime import datetime
 import shutil
 import json
 import os
@@ -12,6 +13,9 @@ PASTA_MIDIAS = "midias"
 ARQ_USUARIOS = "usuarios.json"
 ARQ_POSTS = "posts.json"
 ARQ_MENSAGENS = "mensagens.json"
+
+if not os.path.exists(PASTA_MIDIAS):
+    os.makedirs(PASTA_MIDIAS)
 
 # BANCO JSON
 def carregar_mensagens():
@@ -96,6 +100,7 @@ class RedeSocial(ctk.CTk):
     def tela_login(self):
         self.limpar()
 
+        # Frame central do login
         frame_central = ctk.CTkFrame(self, width=600, height=860, corner_radius=20)
         frame_central.place(relx=0.5, rely=0.5, anchor="center")
         frame_central.pack_propagate(False)
@@ -115,6 +120,7 @@ class RedeSocial(ctk.CTk):
         )
         subtitulo.pack(pady=(0, 30))
 
+        # Inputs salvos na instância (self)
         self.login_usuario = ctk.CTkEntry(
             frame_central,
             width=300,
@@ -133,7 +139,17 @@ class RedeSocial(ctk.CTk):
             corner_radius=10
         )
         self.login_senha.pack(pady=10)
+        
+        # Label invisível para exibir erros de senha
+        self.lbl_erro = ctk.CTkLabel(
+            frame_central, 
+            text="", 
+            font=("Segoe UI", 12, "bold"), 
+            text_color=("#FF3333", "#FF4D4D")
+        )
+        self.lbl_erro.pack(pady=(5, 5))
 
+        # Botão Entrar chama a lógica de verificação (fazer_login)
         btn_entrar = ctk.CTkButton(
             frame_central,
             text="Entrar",
@@ -159,6 +175,57 @@ class RedeSocial(ctk.CTk):
         )
         btn_cadastrar.pack()
 
+    # =========================================================
+    # LÓGICA DE VALIDAÇÃO (Apenas uma função unificada)
+    # =========================================================
+    def fazer_login(self):
+        usuario = self.login_usuario.get().strip()
+        senha = self.login_senha.get().strip()
+
+        # Valida campos em branco
+        if not usuario or not senha:
+            self.lbl_erro.configure(text="❌ Preencha todos os campos!")
+            return
+
+        # Procura usuário na sua lista global 'usuarios'
+        usuario_encontrado = next((u for u in usuarios if u["usuario"] == usuario), None)
+
+        if usuario_encontrado and usuario_encontrado["senha"] == senha:
+            global usuario_logado
+            usuario_logado = usuario
+            
+            self.lbl_erro.configure(text="") # Limpa erro anterior
+            self.tela_feed() # Login feito com sucesso!
+        else:
+            # Dados errados: exibe mensagem vermelha na tela antes de mexer no campo
+            self.lbl_erro.configure(text="❌ Usuário ou senha incorretos!")
+            
+            # Limpa o campo de senha de forma segura usando "end" em string normal
+            self.login_senha.delete(0, "end")
+
+    def verificar_login(self):
+        usuario = self.campo_usuario.get().strip()
+        senha = self.campo_senha.get().strip()
+
+        # Procura o usuário na sua lista global de usuários cadastrados
+        usuario_encontrado = next((u for u in usuarios if u["usuario"] == usuario), None)
+
+        if usuario_encontrado and usuario_encontrado["senha"] == senha:
+            # --- LOGIN COM SUCESSO ---
+            global usuario_logado
+            usuario_logado = usuario
+            
+            # Limpa o aviso de erro caso estivesse lá de uma tentativa anterior
+            self.lbl_erro.configure(text="") 
+            
+            # Redireciona para o feed
+            self.tela_feed()
+        else:
+            # --- FALHA NO LOGIN (Usuário ou Senha incorretos) ---
+            self.lbl_erro.configure(text="❌ Usuário ou senha incorretos!")
+            
+            # Opcional: Limpa apenas o campo de senha para o usuário tentar de novo
+            self.campo_senha.delete(0, 'end')
     # CADASTRO
     def tela_cadastro(self):
         self.limpar()
@@ -223,12 +290,23 @@ class RedeSocial(ctk.CTk):
         btn_voltar.pack()
 
     def deletar_post(self, post_alvo, de_perfil):
-        # Remove o post da lista global
+        # 1. APAGAR A FOTO DO COMPUTADOR (Se ela existir)
+        caminho_foto = post_alvo.get("imagem")
+        
+        if caminho_foto and os.path.exists(caminho_foto):
+            try:
+                os.remove(caminho_foto)
+                print(f"🗑️ Arquivo de imagem deletado com sucesso: {caminho_foto}")
+            except Exception as e:
+                print(f"⚠️ Não foi possível apagar o arquivo físico da foto: {e}")
+
+        # 2. APAGAR O POST DA LISTA GLOBAL
         if post_alvo in posts:
             posts.remove(post_alvo)
-            salvar_posts()
-        
-        # Atualiza a tela onde o usuário estava
+
+        # 3. SALVAR AS ALTERAÇÕES NO JSON E ATUALIZAR A TELA
+        salvar_posts() 
+         
         if de_perfil:
             self.tela_perfil()
         else:
@@ -255,13 +333,29 @@ class RedeSocial(ctk.CTk):
             self.tela_feed()
 
     def escolher_foto_perfil(self, label_status):
-        arquivo = filedialog.askopenfilename(
+        arquivo_origem = filedialog.askopenfilename(
             title="Escolher foto de perfil",
             filetypes=[("Imagens", "*.png *.jpg *.jpeg *.gif")]
         )
-        if arquivo:
-            self.nova_foto_perfil = arquivo
-            label_status.configure(text="Nova foto selecionada!", text_color="#28A745")
+        
+        if arquivo_origem:
+            try:
+                # Pega a extensão do arquivo original (ex: .png ou .jpg)
+                _, extensao = os.path.splitext(arquivo_origem)
+                
+                # Cria um nome único para o arquivo usando o nome do usuário para evitar duplicados
+                nome_novo_arquivo = f"perfil_{usuario_logado}{extensao}"
+                caminho_destino = os.path.join(PASTA_MIDIAS, nome_novo_arquivo)
+                
+                # Copia a imagem fisicamente do computador para a pasta do seu projeto
+                shutil.copy(arquivo_origem, caminho_destino)
+                
+                # Guarda o caminho interno e relativo na variável temporária
+                self.nova_foto_perfil = caminho_destino
+                label_status.configure(text="✅ Foto salva no projeto!", text_color="#28A745")
+            except Exception as e:
+                label_status.configure(text="❌ Erro ao copiar arquivo", text_color="#FF4D4D")
+                print(f"Erro: {e}")
 
     def salvar_dados_perfil(self, campo_bio):
         nova_bio = campo_bio.get("1.0", "end").strip()
@@ -422,10 +516,11 @@ class RedeSocial(ctk.CTk):
         sub_barra.pack(fill="x", padx=20, pady=(5, 15))
 
         self.btn_foto = ctk.CTkButton(
-            sub_barra, text="📷 Adicionar Foto", width=140, height=35,
+            sub_barra, text="Adicionar Foto", width=140, height=35,
             fg_color=("#F0F2F5", "#2A2A2A"), text_color=("#000000", "#FFFFFF"),
             hover_color=("#E4E6EB", "#3A3A3A"), font=("Segoe UI", 12, "bold"),
-            corner_radius=8, command=self.escolher_foto
+            corner_radius=8, 
+            command=self.escolher_foto
         )
         self.btn_foto.pack(side="left")
 
@@ -773,15 +868,58 @@ class RedeSocial(ctk.CTk):
 
     # LOGICA E RENDERIZAÇÃO DOS POSTS
     def escolher_foto(self):
-        arquivo = filedialog.askopenfilename(
-            title="Escolher imagem",
+        arquivo_origem = filedialog.askopenfilename(
+            title="Anexar imagem ao post",
             filetypes=[("Imagens", "*.png *.jpg *.jpeg *.gif")]
         )
-        if arquivo:
-            self.caminho_imagem = arquivo
-            self.btn_foto.configure(text="✅ Foto Selecionada", fg_color="#28A745", text_color="white")
+        
+        if arquivo_origem:
+            try:
+                _, extensao = os.path.splitext(arquivo_origem)
+                
+                # Pega o timestamp atual
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                
+                try:
+                    autor = usuario_logado
+                except NameError:
+                    autor = self.usuario_logado
+
+                try:
+                    pasta = PASTA_MIDIAS
+                except NameError:
+                    pasta = "midias"
+
+                nome_novo_arquivo = f"post_{autor}_{timestamp}{extensao}"
+                caminho_destino = os.path.join(pasta, nome_novo_arquivo)
+                
+                if not os.path.exists(pasta):
+                    os.makedirs(pasta)
+                
+                shutil.copy(arquivo_origem, caminho_destino)
+                
+                self.caminho_imagem = caminho_destino 
+                
+                self.btn_foto.configure(
+                    text="Foto Anexada!", 
+                    fg_color=("#1F6AA5", "#4AA3DF"), 
+                    text_color="#FFFFFF"
+                )
+
+            except Exception as e:
+                print(f"Erro ao anexar foto: {e}")
+                self.caminho_imagem = None
+                self.btn_foto.configure(
+                    text="Falha ao Anexar", 
+                    fg_color=("#FF4D4D", "#CC3333"), 
+                    text_color="#FFFFFF"
+                )
 
     def publicar_post(self):
+        # Garante que a variável exista na classe mesmo se o usuário não escolher foto
+        if not hasattr(self, 'caminho_imagem'):
+            self.caminho_imagem = None
+
         texto = self.post_texto.get("1.0", "end").strip()
         if not texto and not self.caminho_imagem:
             return
@@ -789,13 +927,16 @@ class RedeSocial(ctk.CTk):
         posts.insert(0, {
             "autor": usuario_logado,
             "texto": texto,
-            "imagem": self.caminho_imagem,
+            "imagem": self.caminho_imagem, # Agora vai ler o caminho correto!
             "curtidas": 0
         })
 
         salvar_posts()
         self.post_texto.delete("1.0", "end")
-        self.caminho_imagem = None
+        self.caminho_imagem = None # Reseta corretamente para o próximo post
+        
+        # Opcional: Se você estiver usando o label_status_post para avisar que a foto foi anexada,
+        # lembre-se de resetar o texto dele aqui também se quiser limpar a tela por completo!
         self.btn_foto.configure(text="📷 Adicionar Foto", fg_color=("#F0F2F5", "#2A2A2A"), text_color=("#000000", "#FFFFFF"))
         self.tela_feed()
 
