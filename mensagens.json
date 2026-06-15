@@ -48,5 +48,35 @@
         "enviado_por": "marcos",
         "recebido_por": "natan",
         "texto": "hi, natan whtas happeng"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Bot_Python",
+        "texto": "o"
+    },
+    {
+        "enviado_por": "Bot_Python",
+        "recebido_por": "marcos",
+        "texto": "Interessante! Como uma IA integrada no FacePit, fico feliz em trocar essa ideia com voc\u00ea."
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Bot_Python",
+        "texto": "oi"
+    },
+    {
+        "enviado_por": "Bot_Python",
+        "recebido_por": "marcos",
+        "texto": "Opa, tudo beleza? Pronto para escrever algumas linhas de c\u00f3digo ou resolver algum problema?"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Bot_Python",
+        "texto": "como esta? que ia voce \u00e9?"
+    },
+    {
+        "enviado_por": "Bot_Python",
+        "recebido_por": "marcos",
+        "texto": "Interessante! Me d\u00e1 mais detalhes sobre isso para que eu possa te dar uma resposta ou c\u00f3digo mais preciso."
     }
 ]
