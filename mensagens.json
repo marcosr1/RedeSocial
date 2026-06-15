@@ -13,5 +13,40 @@
         "enviado_por": "marcos",
         "recebido_por": "EU_novo",
         "texto": "opa"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Suporte_Hub",
+        "texto": "ola"
+    },
+    {
+        "enviado_por": "Suporte_Hub",
+        "recebido_por": "marcos",
+        "texto": "Ol\u00e1! Caso voc\u00ea deseje um tipo de suporte espec\u00edfico, entre em contato diretamente pelo n\u00famero: (86)981835751"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "Suporte_Hub",
+        "texto": "oi"
+    },
+    {
+        "enviado_por": "Suporte_Hub",
+        "recebido_por": "marcos",
+        "texto": "Ol\u00e1! Caso voc\u00ea deseje um tipo de suporte espec\u00edfico, entre em contato diretamente pelo n\u00famero: (86)981835751"
+    },
+    {
+        "enviado_por": "natan",
+        "recebido_por": "Suporte_Hub",
+        "texto": "oi"
+    },
+    {
+        "enviado_por": "Suporte_Hub",
+        "recebido_por": "natan",
+        "texto": "Ol\u00e1! Caso voc\u00ea deseje um tipo de suporte espec\u00edfico, entre em contato diretamente pelo n\u00famero: (86)981835751"
+    },
+    {
+        "enviado_por": "marcos",
+        "recebido_por": "natan",
+        "texto": "hi, natan whtas happeng"
     }
 ]
