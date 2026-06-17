@@ -22,7 +22,26 @@
         "bio": "n\na\nt\na\nn",
         "tema": "Dark",
         "amigos": [
+            "leticia",
             "marcos"
+        ]
+    },
+    {
+        "usuario": "Bot_Python",
+        "senha": "root_system_ia_secured_password",
+        "foto_perfil": null,
+        "bio": "\ud83e\udd16 Intelig\u00eancia Artificial oficial integrada ao FacePit. Pergunte-me sobre erros de c\u00f3digo ou ideias!",
+        "tema": "Dark",
+        "amigos": []
+    },
+    {
+        "usuario": "leticia",
+        "senha": "12345",
+        "foto_perfil": null,
+        "bio": "",
+        "tema": "Dark",
+        "amigos": [
+            "natan"
         ]
     }
 ]
