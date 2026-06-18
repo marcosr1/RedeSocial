@@ -1,13 +1,11 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
-from datetime import datetime
-import shutil
 import os
 
-# Importando os módulos locais que separamos
+# Importando os módulos locais
 import gerenciador_dados as gd
-from motor_ia import responder_como_ia
+import logica_interface as li
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -16,10 +14,8 @@ PASTA_MIDIAS = "midias"
 if not os.path.exists(PASTA_MIDIAS):
     os.makedirs(PASTA_MIDIAS)
 
-# Carregamento inicial de dados usando o gerenciador
-usuarios = gd.carregar_usuarios()
-posts = gd.carregar_posts()
-historico_mensagens = gd.carregar_mensagens()
+# Carregamento inicial de dados
+usuarios, posts, historico_mensagens = li.carregar_dados_iniciais()
 usuario_logado = None
 
 class FacePit(ctk.CTk):
@@ -128,85 +124,46 @@ class FacePit(ctk.CTk):
     def salvar_usuario(self):
         usuario = self.cad_usuario.get().strip()
         senha = self.cad_senha.get().strip()
-        if not usuario or not senha: return
-        if any(u["usuario"] == usuario for u in usuarios) or usuario in ["Suporte_Hub", "Bot_Python"]: return
-
-        usuarios.append({"usuario": usuario, "senha": senha, "foto_perfil": None, "bio": "", "tema": "Dark", "amigos": []})
-        gd.salvar_usuarios(usuarios)
-        self.tela_login()
+        
+        sucesso = li.salvar_usuario_logica(usuarios, usuario, senha)
+        if sucesso:
+            self.tela_login()
 
     def adicionar_amigo(self, nome_amigo):
-        meu_perfil = next((u for u in usuarios if u["usuario"] == usuario_logado), None)
-        perfil_amigo = next((u for u in usuarios if u["usuario"] == nome_amigo), None)
-        if meu_perfil and perfil_amigo:
-            if nome_amigo not in meu_perfil["amigos"]: meu_perfil["amigos"].append(nome_amigo)
-            if usuario_logado not in perfil_amigo["amigos"]: perfil_amigo["amigos"].append(usuario_logado)
-            gd.salvar_usuarios(usuarios)
-            self.tela_amigos()
+        li.adicionar_amigo_logica(usuarios, usuario_logado, nome_amigo)
+        self.tela_amigos()
 
     def remover_amigo(self, nome_amigo):
-        meu_perfil = next((u for u in usuarios if u["usuario"] == usuario_logado), None)
-        perfil_amigo = next((u for u in usuarios if u["usuario"] == nome_amigo), None)
-        if meu_perfil and perfil_amigo:
-            if nome_amigo in meu_perfil["amigos"]: meu_perfil["amigos"].remove(nome_amigo)
-            if usuario_logado in perfil_amigo["amigos"]: perfil_amigo["amigos"].remove(usuario_logado)
-            gd.salvar_usuarios(usuarios)
-            self.tela_amigos()
+        li.remover_amigo_logica(usuarios, usuario_logado, nome_amigo)
+        self.tela_amigos()
 
     def deletar_post(self, post_alvo, de_perfil):
-        caminho_foto = post_alvo.get("imagem")
-        if caminho_foto and os.path.exists(caminho_foto):
-            try: os.remove(caminho_foto)
-            except Exception as e: print(f"Erro físico: {e}")
-        if post_alvo in posts: posts.remove(post_alvo)
-        gd.salvar_posts(posts) 
+        li.deletar_post_logica(posts, post_alvo)
         if de_perfil: self.tela_perfil()
         else: self.tela_feed()
 
     def deletar_usuario(self):
-        global usuario_logado, usuarios, posts
-        usuario_alvo = next((u for u in usuarios if u["usuario"] == usuario_logado), None)
-        if usuario_alvo:
-            for u in usuarios:
-                if usuario_logado in u.get("amigos", []): u["amigos"].remove(usuario_logado)
-            usuarios.remove(usuario_alvo)
-            gd.salvar_usuarios(usuarios)
-            posts = [p for p in posts if p["autor"] != usuario_logado]
-            gd.salvar_posts(posts)
-            usuario_logado = None
-            self.tela_login()
+        global usuario_logado, posts
+        novo_posts = li.deletar_usuario_logica(usuarios, posts, usuario_logado)
+        posts = novo_posts
+        usuario_logado = None
+        self.tela_login()
 
     def adicionar_comentario(self, post_alvo, campo_texto, de_perfil):
         texto = campo_texto.get().strip()
         if not texto: return
-        if "comentarios" not in post_alvo: post_alvo["comentarios"] = []
-        post_alvo["comentarios"].append({"autor": usuario_logado, "texto": texto})
-        gd.salvar_posts(posts)
+        li.adicionar_comentario_logica(posts, post_alvo, usuario_logado, texto)
         if de_perfil: self.tela_perfil()
         else: self.tela_feed()
 
     def escolher_foto_perfil(self, label_status):
-        arquivo_origem = filedialog.askopenfilename(title="Foto de perfil", filetypes=[("Imagens", "*.png *.jpg *.jpeg *.gif")])
-        if arquivo_origem:
-            try:
-                _, extensao = os.path.splitext(arquivo_origem)
-                nome_novo_arquivo = f"perfil_{usuario_logado}{extensao}"
-                caminho_destino = os.path.join(PASTA_MIDIAS, nome_novo_arquivo)
-                shutil.copy(arquivo_origem, caminho_destino)
-                self.nova_foto_perfil = caminho_destino
-                label_status.configure(text="✓ Imagem importada com sucesso", text_color="#28A745")
-            except:
-                label_status.configure(text="✕ Erro ao processar arquivo", text_color="#FF4D4D")
+        foto = li.escolher_foto_perfil_logica(usuario_logado, label_status, PASTA_MIDIAS)
+        if foto:
+            self.nova_foto_perfil = foto
 
     def salvar_dados_perfil(self, campo_bio):
         nova_bio = campo_bio.get("1.0", "end").strip()
-        for u in usuarios:
-            if u["usuario"] == usuario_logado:
-                u["bio"] = nova_bio
-                if hasattr(self, 'nova_foto_perfil') and self.nova_foto_perfil:
-                    u["foto_perfil"] = self.nova_foto_perfil
-                break
-        gd.salvar_usuarios(usuarios)
+        li.salvar_dados_perfil_logica(usuarios, usuario_logado, nova_bio, getattr(self, 'nova_foto_perfil', None))
         self.tela_perfil()
 
     def construir_layout_base(self, aba_ativa):
@@ -272,16 +229,7 @@ class FacePit(ctk.CTk):
         texto = campo_texto.get().strip()
         if not texto: return
 
-        historico_mensagens.append({"enviado_por": usuario_logado, "recebido_por": destinatario, "texto": texto})
-
-        if destinatario == "Bot_Python":
-            resposta_ia = responder_como_ia(texto)
-            historico_mensagens.append({"enviado_por": "Bot_Python", "recebido_por": usuario_logado, "texto": resposta_ia})
-        elif destinatario == "Suporte_Hub":
-            resposta_automatica = "Olá! Caso precise de suporte avançado para recuperação de conta ou bugs na interface, chame nossa equipe oficial via Whatsapp no número: (86) 98183-5751"
-            historico_mensagens.append({"enviado_por": "Suporte_Hub", "recebido_por": usuario_logado, "texto": resposta_automatica})
-
-        gd.salvar_mensagens(historico_mensagens)     
+        li.disparar_mensagem_logica(historico_mensagens, usuario_logado, destinatario, texto)
         campo_texto.delete(0, 'end')  
         self.tela_mensagens(destinatario)  
 
@@ -433,37 +381,22 @@ class FacePit(ctk.CTk):
         self.renderizar_lista_posts(posts_do_usuario, de_perfil=eh_meu_perfil)
 
     def escolher_foto(self):
-        arquivo_origem = filedialog.askopenfilename(title="Anexar imagem", filetypes=[("Imagens", "*.png *.jpg *.jpeg *.gif")])
-        if arquivo_origem:
-            try:
-                _, extensao = os.path.splitext(arquivo_origem)
-                nome_novo_arquivo = f"post_{usuario_logado}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{extensao}"
-                caminho_destino = os.path.join(PASTA_MIDIAS, nome_novo_arquivo)
-                shutil.copy(arquivo_origem, caminho_destino)
-                self.caminho_imagem = caminho_destino 
-                self.btn_foto.configure(text="✓ Imagem Pronta", fg_color="#34C759", text_color="#FFFFFF")
-            except:
-                self.caminho_imagem = None
-                self.btn_foto.configure(text="Falhou", fg_color="#FF3B30", text_color="#FFFFFF")
+        foto = li.escolher_foto_logica(usuario_logado, self.btn_foto, PASTA_MIDIAS)
+        self.caminho_imagem = foto
 
     def publicar_post(self):
         if not hasattr(self, 'caminho_imagem'): self.caminho_imagem = None
         texto = self.post_texto.get("1.0", "end").strip()
         if not texto and not self.caminho_imagem: return
 
-        posts.insert(0, {"autor": usuario_logado, "texto": texto, "imagem": self.caminho_imagem, "curtidas": 0})
-        gd.salvar_posts(posts)
+        li.publicar_post_logica(posts, usuario_logado, texto, self.caminho_imagem)
         self.post_texto.delete("1.0", "end")
         self.caminho_imagem = None 
         self.btn_foto.configure(text="Anexar Imagem", fg_color=("#F1F2F4", "#222225"), text_color=("#333333", "#CCCCCC"))
         self.tela_feed()
 
     def curtir(self, post_alvo, de_perfil):
-        for p in posts:
-            if p == post_alvo:
-                p["curtidas"] += 1
-                break
-        gd.salvar_posts(posts)
+        li.curtir_logica(posts, usuario_logado, post_alvo)
         if de_perfil: self.tela_perfil()
         else: self.tela_feed()
 
@@ -510,8 +443,10 @@ class FacePit(ctk.CTk):
 
             rodape = ctk.CTkFrame(card, fg_color="transparent")
             rodape.pack(fill="x", padx=15, pady=5)
-            ctk.CTkButton(rodape, text=f"♥  {post['curtidas']}", width=50, height=24, fg_color="transparent", text_color="#FF3B30", command=lambda p=post: self.curtir(p, de_perfil)).pack(side="left")
-
+    
+            qtd_curtidas = len(post['curtidas']) if isinstance(post.get('curtidas'), list) else post.get('curtidas', 0)
+            ctk.CTkButton(rodape, text=f"♥  {qtd_curtidas}", width=50, height=24, fg_color="transparent", text_color="#FF3B30", command=lambda p=post: self.curtir(p, de_perfil)).pack(side="left")
+            
             frame_comentarios = ctk.CTkFrame(card, fg_color=("#F9F9FB", "#18181A"))
             frame_comentarios.pack(fill="x", padx=15, pady=(5, 10))
 

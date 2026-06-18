@@ -3,13 +3,15 @@
         "autor": "leticia",
         "texto": "oie",
         "imagem": null,
-        "curtidas": 10000000
+        "curtidas": [
+            "marcos"
+        ]
     },
     {
         "autor": "marcos",
         "texto": "oia",
         "imagem": null,
-        "curtidas": -10000000
+        "curtidas": []
     },
     {
         "autor": "EU_novo",
@@ -21,7 +23,7 @@
         "autor": "marcos",
         "texto": "olha ae",
         "imagem": "C:/Users/marco/OneDrive/Imagens/Capturar.PNG",
-        "curtidas": 1,
+        "curtidas": [],
         "comentarios": [
             {
                 "autor": "EU_novo",
