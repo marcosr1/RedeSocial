@@ -1,38 +1,166 @@
-# FacePit 🌐
+# FacePit
 
-O **FacePit** é uma aplicação desktop de rede social interativa desenvolvida em Python. Utilizando uma interface gráfica moderna e responsiva baseada em `customtkinter`, o ecossistema conta com gerenciamento local de dados em JSON e um motor de inteligência artificial nativo para interagir com os usuários no chat.
-
----
-
-## ✨ Funcionalidades
-
-* **Sistema de Autenticação:** Criação de conta e Login seguro de usuários com validação de credenciais.
-* **Feed de Publicações:** Linha do tempo dinâmica onde é possível publicar textos, anexar imagens do computador, curtir (voto único por usuário) e comentar em posts.
-* **Perfil Customizável:** Edição de biografia, upload de foto de perfil personalizada e alternância de tema gráfico (Modo Escuro / Modo Claro).
-* **Gerenciamento de Amigos:** Adicione ou remova outros utilizadores da plataforma para liberar a comunicação direta.
-* **Chat com IA Integrada:** Conversa privada com o **Bot_Python**, um agente cognitivo capaz de analisar o humor do usuário, sugerir ideias de projetos de programação e ajudar a debugar códigos com base no contexto da conversa.
-* **Suporte Automatizado:** Canal direto com o `Suporte_Hub` para orientações técnicas e redirecionamento.
+O **FacePit** é uma aplicação desktop de rede social desenvolvida em Python, com foco em interação entre usuários, compartilhamento de conteúdo e comunicação inteligente. O sistema utiliza uma interface gráfica moderna baseada em **CustomTkinter**, armazenamento local em arquivos JSON e um agente conversacional integrado chamado **Bot_Python**.
 
 ---
 
-## 🛠️ Arquitetura do Projeto
+# Funcionalidades
 
-O projeto é dividido em três módulos principais:
+## Sistema de Autenticação
 
-1.  `main.py`: Concentra a interface do usuário (GUI), transições de telas e regras de apresentação visual utilizando o paradigma de Orientação a Objetos.
-2.  `gerenciador_dados.py`: Camada de persistência responsável por carregar e salvar dados de usuários, posts e mensagens em arquivos estruturados `.json`.
-3.  `motor_ia.py`: Motor conversacional lógico que gerencia estados de memória de curto prazo, análise de sentimentos e filtros de intenção por palavras-chave.
+- Cadastro de novos usuários
+- Login com validação de credenciais
+- Prevenção de nomes de usuário duplicados
+- Proteção de contas reservadas do sistema
+
+## Feed de Publicações
+
+- Criação de publicações de texto
+- Upload de imagens locais
+- Sistema de curtidas com voto único por usuário
+- Sistema de comentários
+- Atualização dinâmica do feed
+
+## Perfil Personalizável
+
+- Alteração da foto de perfil
+- Edição de biografia
+- Personalização de informações do usuário
+- Alternância entre modo claro e modo escuro
+
+## Gerenciamento de Amigos
+
+- Adição de amigos
+- Remoção de amigos
+- Controle de relacionamentos entre usuários
+
+## Sistema de Mensagens
+
+- Conversas privadas entre usuários
+- Histórico persistente de mensagens
+- Integração com serviços automatizados
+
+## Bot_Python
+
+O FacePit possui um agente conversacional integrado chamado **Bot_Python**, desenvolvido para auxiliar usuários em tarefas relacionadas à programação e tecnologia.
+
+### Recursos do Bot
+
+- Memória de curto prazo por usuário
+- Análise básica de humor e sentimento
+- Contexto de conversa persistente durante a execução
+- Sugestões de projetos de programação
+- Auxílio em depuração de código
+- Respostas dinâmicas baseadas em intenções identificadas
+
+### Tópicos Reconhecidos
+
+- Erros e bugs em código
+- Ideias de projetos
+- Programação Python
+- Desenvolvimento de software
+- Jogos e tecnologia
+- Conversação casual
+
+## Suporte Automatizado
+
+O sistema também conta com o usuário especial **Suporte_Hub**, responsável por fornecer orientações básicas e direcionamento para atendimento técnico.
 
 ---
 
-## 🚀 Como Executar o Projeto
+# Arquitetura do Projeto
 
-### Pré-requisitos
-Certifique-se de ter o Python 3.8+ instalado em sua máquina.
+A aplicação foi organizada de forma modular para facilitar manutenção, evolução e reutilização de código.
 
-### Instalação das Dependências
-Este projeto utiliza algumas bibliotecas de terceiros que precisam ser instaladas antes da execução. As bibliotecas nativas do Python utilizadas (`os`, `json`, `random`, `shutil`, `datetime` e `tkinter`) não requerem instalação adicional.
-Para instalar as dependências externas, execute o comando abaixo no seu terminal:
+## main.py
+
+Responsável pela interface gráfica da aplicação.
+
+### Funções principais
+
+- Construção das telas
+- Navegação entre janelas
+- Exibição de publicações
+- Interação com componentes visuais
+- Atualização do feed
+
+## logica_interface.py
+
+Responsável pelas regras de negócio.
+
+### Funções principais
+
+- Cadastro de usuários
+- Login
+- Gerenciamento de posts
+- Curtidas
+- Comentários
+- Controle de mensagens
+- Persistência de dados
+
+## motor_ia.py
+
+Motor conversacional responsável pelo funcionamento do Bot_Python.
+
+### Funções principais
+
+- Memória contextual
+- Análise de humor
+- Processamento de intenções
+- Geração de respostas
+- Sugestão de projetos
+
+---
+
+# Estrutura do Projeto
+
+```text
+FacePit/
+│
+├── main.py
+├── logica_interface.py
+├── motor_ia.py
+├── gerenciador_dados.py
+│
+├── usuarios.json
+├── posts.json
+├── mensagens.json
+│
+├── midias/
+│
+└── README.md
+```
+
+# Tecnologias Utilizadas
+
+- Python 3.8+
+- CustomTkinter
+- Pillow (PIL)
+- JSON
+- Tkinter
+- Datetime
+- OS
+- Shutil
+- Random
+
+---
+
+# Como Executar o Projeto
+
+## Pré-requisitos
+
+- Python 3.8 ou superior
+
+## Instalação das Dependências
+
 ```bash
 pip install customtkinter pillow
 ```
+
+## Executando a Aplicação
+
+```bash
+python main.py
+```
+
+---
