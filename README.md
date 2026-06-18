@@ -11,13 +11,12 @@ O **FacePit** é uma aplicação desktop de rede social desenvolvida em Python, 
 - Cadastro de novos usuários
 - Login com validação de credenciais
 - Prevenção de nomes de usuário duplicados
-- Proteção de contas reservadas do sistema
 
 ## Feed de Publicações
 
 - Criação de publicações de texto
 - Upload de imagens locais
-- Sistema de curtidas com voto único por usuário
+- Sistema de curtidas
 - Sistema de comentários
 - Atualização dinâmica do feed
 
@@ -39,10 +38,6 @@ O **FacePit** é uma aplicação desktop de rede social desenvolvida em Python, 
 - Conversas privadas entre usuários
 - Histórico persistente de mensagens
 - Integração com serviços automatizados
-
-## Bot_Python
-
-O FacePit possui um agente conversacional integrado chamado **Bot_Python**, desenvolvido para auxiliar usuários em tarefas relacionadas à programação e tecnologia.
 
 ### Recursos do Bot
 
@@ -97,18 +92,6 @@ Responsável pelas regras de negócio.
 - Comentários
 - Controle de mensagens
 - Persistência de dados
-
-## motor_ia.py
-
-Motor conversacional responsável pelo funcionamento do Bot_Python.
-
-### Funções principais
-
-- Memória contextual
-- Análise de humor
-- Processamento de intenções
-- Geração de respostas
-- Sugestão de projetos
 
 ---
 
